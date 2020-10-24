@@ -5,40 +5,48 @@ import (
 	"sync"
 )
 
-const (
-	kimBusyMale   = true
-	kimBusyFemale = false
-)
+const kimBusy = true
 
-type marchese struct {
+type hands struct {
 	queue map[string]int
 	mux   sync.Mutex
 }
 
 type student struct {
-	name   string
-	onDeck bool
+	Name       string
+	RaisedHand bool
+	OnDeck     bool
 }
 
-func newStudent(name string) *student {
-	s := student{name: name}
-	s.onDeck = false
-	return &s
+func newStudent(name string) student {
+	s := student{Name: name}
+	s.OnDeck = false
+	return s
 }
 
-func raiseHand() {
+func (s student) raiseHand() {
 
 }
 
-func (s student) doWork() {
+func kim() {
 
+}
+
+func classroom(class []string) {
+	theClass := make([]student, len(class))
+
+	for _, name := range class {
+		theClass = append(theClass, newStudent(name))
+	}
 }
 
 func main() {
-	names := [12]string{
+	names := []string{
 		"Jon", "Peter", "Mike", "Daniel",
 		"Ben", "Jared", "Nima", "Mark",
 		"Bill", "Ted", "Marty", "Biff",
 	}
+	go kim()
+	go classroom(names)
 	fmt.Println(names)
 }
