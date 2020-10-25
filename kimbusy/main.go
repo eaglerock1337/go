@@ -9,13 +9,7 @@ import (
 
 const kimBusy = true
 
-// Bell is a thing.
-type Bell struct {
-	ringing bool
-	mux     sync.Mutex
-}
-
-// Student is a thing.
+// Student is a data type passed to the kim goroutine from a student.
 type Student struct {
 	name      string
 	busyCount int
@@ -30,24 +24,26 @@ func newStudent(name string) Student {
 }
 
 func kim(hand chan Student) {
-	time.Sleep(time.Duration(rand.Intn(5)) * time.Second)
+	time.Sleep(time.Duration(rand.Intn(5)+5) * time.Second)
 	fmt.Println("Kim's all ready to help!")
 
 	for {
 		somebody := <-hand
 		fmt.Printf("Kim sees %v's raised hand!\n", somebody.name)
 		if kimBusy {
-			if somebody.busyCount < 5 {
+			if somebody.busyCount < rand.Intn(5)+2 {
+				// Students get a 'Busy' a certain number of times
 				fmt.Println("Kim says 'Busy!'")
 				somebody.response <- "Busy"
 			} else {
+				// After a while, Kim tells them they're 'On Deck'
 				fmt.Println("Kim says 'You're on Deck!'")
 				somebody.response <- "On Deck"
 			}
 		} else {
 			fmt.Println("Something went wrong! Kim is always busy!")
 		}
-		time.Sleep(time.Duration(rand.Intn(5)) * time.Second)
+		time.Sleep(time.Duration(rand.Intn(5)+1) * time.Second)
 	}
 }
 
@@ -55,44 +51,42 @@ func student(wg *sync.WaitGroup, name string, hand chan Student) {
 	defer wg.Done()
 	me := newStudent(name)
 	fmt.Printf("%v has started his work!\n", me.name)
-	time.Sleep(time.Duration(rand.Intn(5)+5) * time.Second)
-	fmt.Printf("%v needs some help and raises his hand!\n", me.name)
+	time.Sleep(time.Duration(rand.Intn(15)+5) * time.Second)
 
+	// Time for the futile attempt at getting some help from Kim
+	fmt.Printf("%v needs some help and raises his hand!\n", me.name)
 	for {
 		select {
-		case hand <- me:
+		case hand <- me: // Kim actually bothers to notice you
 			kimSez := <-me.response
 			if kimSez == "Busy" {
 				me.busyCount++
 			} else if kimSez == "On Deck" {
 				fmt.Printf("%v is on deck and accepts his fate.\n", me.name)
 				return
-			} else {
-				fmt.Println("This will never happen! Kim's always busy!")
-				return
 			}
 			fmt.Printf("%v waits a bit to raise his hand again.\n", me.name)
-			time.Sleep(time.Duration(rand.Intn(5)) * time.Second)
+			time.Sleep(time.Duration(rand.Intn(5)+5) * time.Second)
 			fmt.Printf("%v raises his hand again!\n", me.name)
-		default:
-			time.Sleep(time.Duration(rand.Intn(5)) * time.Second)
+		default: // You can't even get Kim's attention
+			time.Sleep(time.Duration(rand.Intn(5)+1) * time.Second)
 		}
 	}
 }
 
 func classroom(class []string) {
-	var wg sync.WaitGroup
-	hand := make(chan Student, 1)
+	var wg sync.WaitGroup         // Wait group for checking how many students are still working
+	hand := make(chan Student, 1) // Channel for Kim seeing raised hands
 	fmt.Println("Time for class!")
 
-	go kim(hand)
+	go kim(hand) // Goroutine for Kim
 	for _, name := range class {
-		go student(&wg, name, hand)
+		go student(&wg, name, hand) // Goroutine for each student
 	}
 
-	wg.Add(len(class))
-	wg.Wait()
-	fmt.Println("The bell has rung!")
+	wg.Add(len(class)) // Set the wait group to the number of students
+	wg.Wait()          // Don't end class until everyone's spirit is broken
+	fmt.Println("The bell has rung! Class dismissed!")
 }
 
 func main() {
