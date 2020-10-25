@@ -91,8 +91,8 @@ func classroom(class []string) {
 
 func main() {
 	names := []string{
-		"Jon", "Peter", "Mike", "Dan",
-		"Ben", "Jared", "Nima", "Mark",
+		"Jon", "Peter", "Matt", "Mike",
+		"Andrew", "Nima", "Dan", "Ben",
 		"Bill", "Ted", "Marty", "Biff",
 	}
 	rand.Seed(time.Now().UnixNano())
