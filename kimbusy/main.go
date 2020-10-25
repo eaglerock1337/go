@@ -54,7 +54,7 @@ func student(wg *sync.WaitGroup, name string, hand chan Student) {
 	time.Sleep(time.Duration(rand.Intn(15)+5) * time.Second)
 
 	// Time for the futile attempt at getting some help from Kim
-	fmt.Printf("%v needs some help and raises his hand!\n", me.name)
+	fmt.Printf("%v raises his hand for some help!\n", me.name)
 	for {
 		select {
 		case hand <- me: // Kim actually bothers to notice you
@@ -65,7 +65,7 @@ func student(wg *sync.WaitGroup, name string, hand chan Student) {
 				fmt.Printf("%v is on deck and accepts his fate.\n", me.name)
 				return
 			}
-			fmt.Printf("%v waits a bit to raise his hand again.\n", me.name)
+			fmt.Printf("%v waits a bit before trying again.\n", me.name)
 			time.Sleep(time.Duration(rand.Intn(5)+5) * time.Second)
 			fmt.Printf("%v raises his hand again!\n", me.name)
 		default: // You can't even get Kim's attention
@@ -75,9 +75,9 @@ func student(wg *sync.WaitGroup, name string, hand chan Student) {
 }
 
 func classroom(class []string) {
-	var wg sync.WaitGroup         // Wait group for checking how many students are still working
-	hand := make(chan Student, 1) // Channel for Kim seeing raised hands
-	fmt.Println("Time for class!")
+	var wg sync.WaitGroup      // Wait group for checking how many students are still working
+	hand := make(chan Student) // Channel for Kim seeing raised hands
+	fmt.Println("The bell has rung! Time for class!")
 
 	go kim(hand) // Goroutine for Kim
 	for _, name := range class {
@@ -91,7 +91,7 @@ func classroom(class []string) {
 
 func main() {
 	names := []string{
-		"Jon", "Peter", "Mike", "Daniel",
+		"Jon", "Peter", "Mike", "Dan",
 		"Ben", "Jared", "Nima", "Mark",
 		"Bill", "Ted", "Marty", "Biff",
 	}
