@@ -1,0 +1,3 @@
+[submodule "gobat"]
+	path = gobat
+	url = git@github.com:eaglerock1337/gobat.git
