@@ -1,0 +1,13 @@
+go 1.21.1
+
+use (
+  ./chicks
+  ./coins
+  ./hello
+  ./kimbusy
+  ./linkedlist
+  ./newton
+  ./prime
+  ./teststr
+  ./tour-of-go
+)

@@ -30,19 +30,23 @@ func kim(hand chan Student) {
 	for {
 		somebody := <-hand
 		fmt.Printf("Kim sees %v's raised hand!\n", somebody.name)
+
 		if kimBusy {
 			if somebody.busyCount < rand.Intn(5)+2 {
 				// Students get a 'Busy' a certain number of times
 				fmt.Println("Kim says 'Busy!'")
 				somebody.response <- "Busy"
+
 			} else {
 				// After a while, Kim tells them they're 'On Deck'
 				fmt.Println("Kim says 'You're on Deck!'")
 				somebody.response <- "On Deck"
 			}
+
 		} else {
 			fmt.Println("Something went wrong! Kim is always busy!")
 		}
+
 		time.Sleep(time.Duration(rand.Intn(5)+1) * time.Second)
 	}
 }
@@ -59,16 +63,19 @@ func student(wg *sync.WaitGroup, name string, hand chan Student) {
 		select {
 		case hand <- me: // Kim actually bothers to notice you
 			kimSez := <-me.response
+
 			if kimSez == "Busy" {
 				me.busyCount++
 			} else if kimSez == "On Deck" {
 				fmt.Printf("%v is on deck and accepts his fate.\n", me.name)
 				return
 			}
+
 			fmt.Printf("%v waits a bit before trying again.\n", me.name)
 			time.Sleep(time.Duration(rand.Intn(5)+5) * time.Second)
 			fmt.Printf("%v raises his hand again!\n", me.name)
-		default: // You can't even get Kim's attention
+
+			default: // You can't even get Kim's attention
 			time.Sleep(time.Duration(rand.Intn(5)+1) * time.Second)
 		}
 	}
