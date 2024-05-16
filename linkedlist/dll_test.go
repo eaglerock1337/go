@@ -23,3 +23,8 @@ func TestNewList_ReturnsEmptyList(t *testing.T) {
 	assertEqual(t, myList.Length, 0)
 	assertNil(t, myList.Head)
 }
+
+func TestNewList_ReturnsEmptyLength(t *testing.T) {
+	myList := l.New()
+	assertEqual(t, myList.Len(), 0)
+}

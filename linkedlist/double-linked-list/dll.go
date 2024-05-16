@@ -15,3 +15,7 @@ func New() *List {
 	myList := List{nil, 0}
 	return &myList
 }
+
+func (l *List) Len() int {
+	return l.Length
+}
